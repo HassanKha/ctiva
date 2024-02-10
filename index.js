@@ -12,7 +12,7 @@ import path from 'path';
 const app = express();
 const port =  3001;
 app.use(cors({
-        origin: ['https://task-vg2v.vercel.app','http://localhost:5173'],
+        origin: ['https://task-vg2v.vercel.app','http://localhost:5173','https://backend-8fks.onrender.com','http://localhost:3001'],
       credentials: true, //access-control-allow-credentials:true
       optionSuccessStatus: 200,
     }));
