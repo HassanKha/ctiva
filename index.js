@@ -12,14 +12,17 @@ import path from 'path';
 const app = express();
 const port =  3001;
 app.use(cors({
-        origin: 'https://task-vg2v.vercel.app/',
+        origin: ['https://task-vg2v.vercel.app','http://localhost:5173'],
       credentials: true, //access-control-allow-credentials:true
       optionSuccessStatus: 200,
     }));
 dotenv.config();
+const __dirname = path.resolve();
 app.use(express.json());
-const _dirname = path.resolve();
-app.use(express.static(path.join(_dirname,'/client/my-project/dist')));
+
+app.use(express.static(path.join(__dirname,'/client/dist')));
+
+
 const upload = multer({ dest: "uploads/" });
 
 app.post("/upload", upload.single("csvFile"), (req, res) => {
