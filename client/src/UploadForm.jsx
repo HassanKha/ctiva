@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 function UploadForm() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
@@ -24,7 +23,7 @@ function UploadForm() {
     console.log(formData);
     try {
       const response = await axios.post(
-        "/upload",
+        "http://localhost:3001/upload",
         formData,
         {
           headers: {
@@ -32,7 +31,7 @@ function UploadForm() {
           },
         }
       );
-
+      console.log(response.data);
       const ImageButtering = response.data.image;
 
       setImageSrc(`data:image/png;base64,${ImageButtering}`);
@@ -83,3 +82,4 @@ function UploadForm() {
 }
 
 export default UploadForm;
+
