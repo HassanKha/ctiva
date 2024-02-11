@@ -32,9 +32,9 @@ function UploadForm() {
         }
       );
       console.log(response.data);
-      const ImageButtering = response.data.image;
+      // const ImageButtering = response.data.image;
 
-      setImageSrc(`data:image/png;base64,${ImageButtering}`);
+      // setImageSrc(`data:image/png;base64,${ImageButtering}`);
       console.log(response.data.Stats);
       setData(response.data.Stats)
       setMessage("uploaded successfully");
@@ -43,6 +43,32 @@ function UploadForm() {
       setMessage("Error uploading file.");
     }
   };
+
+  const ShowGraph = async (event)=> {
+    event.preventDefault();
+    console.log(data)
+    try {
+      const response = await axios.post(
+        "https://backend-8fks.onrender.com/graph",
+        {ages:data.ages},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      const ImageButtering = response.data.image;
+
+      setImageSrc(`data:image/png;base64,${ImageButtering}`);
+    
+      setMessage("uploaded successfully");
+    } catch (error) {
+      console.log(error);
+      setMessage("Error uploading file.");
+    }
+
+  }
 
   return (
     <div className="max-w-screen ">
@@ -75,6 +101,7 @@ function UploadForm() {
           <div className="font-medium"> Age Average</div>
           <div className="text-gray-100 font-medium border p-1">{ data ? data.ageRange : '??'}</div>
         </div>
+        <button onClick={ShowGraph} className="outline-none bg-violet-50 px-6 py-3 cursor-pointer rounded-md font-sans text-violet-500 text-sm font-medium hover:bg-violet-200 " type="submit">Show Graphs</button>
         <div>{imageSrc && <img className="shadow-xl" src={imageSrc} alt="Age Distribution" />}</div>
       </div>
     </div>
