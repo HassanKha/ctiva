@@ -47,68 +47,88 @@ app.post("/upload", upload.single("csvFile"), async (req, res) => {
     const maxAge = statistics.max(ages);
     const minAge = statistics.min(ages);
     const ageRange = maxAge - minAge;
-    const Stats = { meanAge, medianAge, ageRange };
+    const Stats = { meanAge, medianAge, ageRange , ages };
 
-    // Perform analytics
-    // const ageGroups = lo.groupBy(ages, (age) => {
-    //   if (age < 18) {
-    //     return "Under 18";
-    //   } else if (age >= 18 && age < 30) {
-    //     return "18-29";
-    //   } else if (age >= 30 && age < 40) {
-    //     return "30-39";
-    //   } else {
-    //     return "40+";
-    //   }
-    // });
-
-    // const ageGroupCounts = lo.mapValues(ageGroups, (group) => group.length);
-
-    // // Visualization
-    // const canvasRenderService = new ChartJSNodeCanvas({
-    //   width: 800,
-    //   height: 600,
-    // });
-
-    // const configuration = {
-    //   type: "bar",
-    //   data: {
-    //     labels: Object.keys(ageGroupCounts),
-    //     datasets: [
-    //       {
-    //         label: "Age Distribution",
-    //         data: Object.values(ageGroupCounts),
-    //         backgroundColor: [
-    //           "rgba(255, 99, 132, 0.5)",
-    //           "rgba(54, 162, 235, 0.5)",
-    //           "rgba(255, 206, 86, 0.5)",
-    //           "rgba(75, 192, 192, 0.5)",
-    //         ],
-    //         borderColor: [
-    //           "rgba(255, 99, 132, 1)",
-    //           "rgba(54, 162, 235, 1)",
-    //           "rgba(255, 206, 86, 1)",
-    //           "rgba(75, 192, 192, 1)",
-    //         ],
-    //         borderWidth: 1,
-    //       },
-    //     ],
-    //   },
-    //   options: {
-    //     scales: {
-    //       y: {
-    //         beginAtZero: true,
-    //       },
-    //     },
-    //   },
-    // };
-
-    // const image = await canvasRenderService.renderToBuffer(configuration);
-    // const base64ImageData = Buffer.from(image).toString("base64");
+    
 
      res.json({ success: true,
      //  image: base64ImageData ,
         Stats:Stats });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+
+app.post("/graph", async (req, res) => {
+  try {
+    if (!req.body.ages) {
+      return res.status(400).json({ success: false, message: "No file uploaded." });
+    }
+
+  
+    console.log(req.body.ages);
+     const ages = req.body.ages;
+     console.log(ages,req.body.ages);
+    // Perform analytics
+    const ageGroups = lo.groupBy(ages, (age) => {
+      if (age < 18) {
+        return "Under 18";
+      } else if (age >= 18 && age < 30) {
+        return "18-29";
+      } else if (age >= 30 && age < 40) {
+        return "30-39";
+      } else {
+        return "40+";
+      }
+    });
+
+    const ageGroupCounts = lo.mapValues(ageGroups, (group) => group.length);
+
+    // Visualization
+    const canvasRenderService = new ChartJSNodeCanvas({
+      width: 800,
+      height: 600,
+    });
+
+    const configuration = {
+      type: "bar",
+      data: {
+        labels: Object.keys(ageGroupCounts),
+        datasets: [
+          {
+            label: "Age Distribution",
+            data: Object.values(ageGroupCounts),
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.5)",
+              "rgba(54, 162, 235, 0.5)",
+              "rgba(255, 206, 86, 0.5)",
+              "rgba(75, 192, 192, 0.5)",
+            ],
+            borderColor: [
+              "rgba(255, 99, 132, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    };
+
+    const image = await canvasRenderService.renderToBuffer(configuration);
+    const base64ImageData = Buffer.from(image).toString("base64");
+
+     res.json({ success: true , image: base64ImageData});
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ success: false, message: "Internal server error." });
