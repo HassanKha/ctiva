@@ -69,62 +69,12 @@ app.post("/graph", async (req, res) => {
 
   
     console.log(req.body.ages);
-     const ages = req.body.ages;
-     console.log(ages,req.body.ages);
-    // Perform analytics
-    const ageGroups = lo.groupBy(ages, (age) => {
-      if (age < 18) {
-        return "Under 18";
-      } else if (age >= 18 && age < 30) {
-        return "18-29";
-      } else if (age >= 30 && age < 40) {
-        return "30-39";
-      } else {
-        return "40+";
-      }
-    });
-
-    const ageGroupCounts = lo.mapValues(ageGroups, (group) => group.length);
-
-    // Visualization
-    const canvasRenderService = new ChartJSNodeCanvas({
+     const configuration = req.body.ages;
+     console.log(configuration);
+     const canvasRenderService = new ChartJSNodeCanvas({
       width: 800,
       height: 600,
     });
-
-    const configuration = {
-      type: "bar",
-      data: {
-        labels: Object.keys(ageGroupCounts),
-        datasets: [
-          {
-            label: "Age Distribution",
-            data: Object.values(ageGroupCounts),
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(54, 162, 235, 0.5)",
-              "rgba(255, 206, 86, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    };
-
     const image = await canvasRenderService.renderToBuffer(configuration);
     const base64ImageData = Buffer.from(image).toString("base64");
 
